@@ -1,7 +1,6 @@
 package com.aeb.pinyin.impl.custompattern;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
@@ -103,7 +102,7 @@ public class TestCustomPattern {
 				new SegmentationOptions(),
 				new PinyinFormatOptions(),
 				context);
-		assertThat(pinyin, is(expectedPinyin));
+		assertEquals(expectedPinyin, pinyin);
 		
 		return pinyin;
 	}
