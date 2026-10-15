@@ -24,6 +24,20 @@ public class PinyinPro4J {
 	}
 	
 	/**
+	 * Creates a new PinyinContext with the given additional dictionary and {@link CustomPattern}s.<br>
+	 * A context is required for segmentation of Chinese text into Pinyin segments.<br>
+	 * Creating a context is an expensive operation, so reuse a context whenever.<br>
+	 * @param dict The additional dictionary to use, or null for no additional dictionary.
+	 * @param customPatterns The additional {@link CustomPattern}s to use.
+	 * @return The created PinyinContext.
+	 */
+	public static PinyinSegmentationContext createNewContext(
+			StandardDictionary dict,
+			List<CustomPattern> customPatterns) {
+		return new PinyinSegmentationContextBuilder(dict).setCustomPatterns(customPatterns).build();
+	}
+	
+	/**
 	 * Converts the given text to Pinyin using the given segmentation options, format options and context.<br>
 	 * First segementation is performed, then formatting of the segments to Pinyin string.<br>
 	 * @param text The chinese text to convert.

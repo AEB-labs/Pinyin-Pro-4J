@@ -33,6 +33,8 @@ class PinyinSegmentationContextBuilder {
 	
 	List<Pattern> standardDictionaryPatterns;
 	
+	List<CustomPattern> customPatterns = new ArrayList<>();
+	
 	List<Pattern> allPatterns = new ArrayList<>();
 	
 	AhoCorasickMatching ac;
@@ -46,9 +48,16 @@ class PinyinSegmentationContextBuilder {
 		readSimpleDict("surnames.json", m -> dictSurnames = m, Priority.Surname, Probability.Surname);
 		
 		readAdditionalDictionaryPatterns();
+		addCustomPatterns();
 		
 		ac = new AhoCorasickMatching(allPatterns);
 		return new PinyinSegmentationContext(ac);
+	}
+	
+	private void addCustomPatterns() {
+		for (CustomPattern customPattern : customPatterns) {
+			allPatterns.add(new Pattern(customPattern));
+		}
 	}
 	
 	private void readAdditionalDictionaryPatterns() {
@@ -89,6 +98,11 @@ class PinyinSegmentationContextBuilder {
 								probability.getProbability(entry.getKey()),
 								null))
 				.toList();
+	}
+	
+	public PinyinSegmentationContextBuilder setCustomPatterns(List<CustomPattern> customPatterns) {
+		this.customPatterns = customPatterns;
+		return this;
 	}
 	
 }

@@ -1,5 +1,7 @@
 package com.aeb.pinyin.impl.segmentation;
 
+import com.aeb.pinyin.api.CustomPattern;
+
 /**
  * A pattern of chinese text associated with one possible pinyin
  * transcription.<br>
@@ -17,6 +19,15 @@ public class Pattern {
 		this.priority = priority;
 		this.probability = probability;
 		this.partOfSpeech = partOfSpeech;
+	}
+	
+	public Pattern(CustomPattern customPattern) {
+		this.zh = customPattern.getZh();
+		this.pinyin = customPattern.getPinyin();
+		this.length = zh.codePointCount(0, zh.length());
+		this.priority = Priority.newCustomPriority(customPattern);
+		this.probability = customPattern.getProbability();
+		this.partOfSpeech = null;
 	}
 	
 	/**

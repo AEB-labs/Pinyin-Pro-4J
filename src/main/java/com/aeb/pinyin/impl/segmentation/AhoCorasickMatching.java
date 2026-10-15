@@ -10,7 +10,6 @@ import java.util.TreeMap;
 import java.util.function.Consumer;
 
 import com.aeb.pinyin.api.SegmentationOptions;
-import com.aeb.pinyin.api.SurnameMode;
 import com.aeb.pinyin.impl.utils.UnicodeUtils;
 
 /**
@@ -146,7 +145,7 @@ public class AhoCorasickMatching {
 			} else {
 				cur = cur.children.get(c);
 				//debug(":::Gone to child ", cur);
-				Pattern pattern = findFirstMatchingPattern(cur.patterns, finali, options.surnameMode);
+				Pattern pattern = findFirstMatchingPattern(cur.patterns, finali, zhChars.length, options);
 				if (pattern != null) {
 					MatchedPattern newPattern = new MatchedPattern(pattern, i - pattern.length + 1);
 					onMatch.accept(newPattern);
@@ -159,7 +158,7 @@ public class AhoCorasickMatching {
 			TrieNode failNode = cur.fail;
 			while (failNode != null) {
 				//debug(":::Gone to fail node in posthandling: ", failNode);
-				Pattern pattern = findFirstMatchingPattern(failNode.patterns, finali, options.surnameMode);
+				Pattern pattern = findFirstMatchingPattern(failNode.patterns, finali, zhChars.length, options);
 				if (pattern != null) {
 					MatchedPattern newPattern = new MatchedPattern(pattern, i - pattern.length + 1);
 					onMatch.accept(newPattern);
@@ -198,18 +197,11 @@ public class AhoCorasickMatching {
 	protected Pattern findFirstMatchingPattern(
 			List<Pattern> patternsToSearchIn,
 			int currentIndexInZhText,
-			SurnameMode surnameMode) {
+			int lengthOfZhText,
+			SegmentationOptions options) {
+		boolean isAtEnd = currentIndexInZhText == lengthOfZhText - 1;
 		return patternsToSearchIn.stream()
-				.filter(item -> {
-					return switch (surnameMode) {
-						case SurnameMode.ON -> true;
-						case SurnameMode.OFF -> item.priority != Priority.Surname;
-						case SurnameMode.HEAD -> {
-							yield item.priority != Priority.Surname ||
-									item.length - 1 - currentIndexInZhText == 0;
-						}
-					};
-				})
+				.filter(item -> item.priority.applies(options, item.length - 1 - currentIndexInZhText == 0, isAtEnd))
 				.findFirst()
 				.orElse(null);
 	}
